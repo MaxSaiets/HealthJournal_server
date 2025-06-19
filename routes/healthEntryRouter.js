@@ -7,7 +7,6 @@ const router = new Router();
 
 router.use(authMiddleware);
 
-// Валідація для створення/оновлення запису
 const entryValidation = [
     body('date').isDate().withMessage('Невірний формат дати'),
     body('mood').isInt({ min: 1, max: 5 }).withMessage('Настрій повинен бути від 1 до 5'),
@@ -17,22 +16,16 @@ const entryValidation = [
     body('notes').optional().isString().withMessage('Нотатки повинні бути рядком')
 ];
 
-// Створення запису
 router.post('/', entryValidation, healthEntryController.create);
 
-// Отримання всіх записів з пагінацією та фільтрацією
 router.get('/', healthEntryController.getAll);
 
-// Отримання статистики
 router.get('/statistics', healthEntryController.getStatistics);
 
-// Отримання одного запису
 router.get('/:id', healthEntryController.getOne);
 
-// Оновлення запису
 router.put('/:id', entryValidation, healthEntryController.update);
 
-// Видалення запису
 router.delete('/:id', healthEntryController.delete);
 
 module.exports = router; 

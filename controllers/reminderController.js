@@ -181,7 +181,7 @@ class ReminderController {
     async getTodayReminders(req, res) {
         try {
             const today = new Date();
-            const dayOfWeek = today.getDay(); // 0 = Sunday, 1 = Monday, etc.
+            const dayOfWeek = today.getDay();
             const todayStr = today.toISOString().slice(0, 10); // 'YYYY-MM-DD'
             const Op = require('sequelize').Op;
             const reminders = await Reminder.findAll({

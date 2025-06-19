@@ -1,5 +1,3 @@
-// запускаєм функцію передаєм туди роль і дивлячись які ролі 
-// передаються різні middleware
 const jwt = require('jsonwebtoken')
 
 module.exports = function(role){
@@ -8,7 +6,7 @@ module.exports = function(role){
             next()
         }
         try{
-            const token = req.headers.authorization.split(' ')[1] // Bearer token - тип токена потім сам токен (так пишуть) тобто треба розлепить і по 1 індексу отримати сам токен
+            const token = req.headers.authorization.split(' ')[1]
             if(!token){
                 return res.status(401).json({message: 'Не авторизований!(authMiddleware.js)'})
             }

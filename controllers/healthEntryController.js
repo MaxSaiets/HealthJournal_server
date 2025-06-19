@@ -69,7 +69,6 @@ class HealthEntryController {
                 };
             }
 
-            // Фільтрація по entryType
             if (entryType && entryType !== 'full') {
                 if (['water', 'sleep', 'activity', 'mood'].includes(entryType)) {
                     const fieldMap = {
@@ -84,7 +83,6 @@ class HealthEntryController {
 
             const offset = (page - 1) * limit;
 
-            // Сортування
             let order = [['date', 'DESC']];
             if (sortField && sortField !== 'date') {
                 order = [[sortField, sortOrder.toUpperCase()]];
@@ -254,7 +252,6 @@ class HealthEntryController {
                 order: [['date', 'ASC']]
             });
 
-            // Групування даних
             const groupedData = entries.reduce((acc, entry) => {
                 const date = entry.date;
                 if (!acc[date]) {
@@ -279,7 +276,6 @@ class HealthEntryController {
                 return acc;
             }, {});
 
-            // Обчислення середніх значень
             const statistics = Object.values(groupedData).map(day => ({
                 ...day,
                 averageMood: day.moods.length > 0
@@ -287,7 +283,6 @@ class HealthEntryController {
                     : null
             }));
 
-            // Обчислення загальної статистики
             const summary = {
                 totalEntries: entries.length,
                 averageMood: entries.length > 0

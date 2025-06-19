@@ -7,7 +7,6 @@ const router = new Router();
 
 router.use(authMiddleware);
 
-// Створення нагадування
 router.post('/',
     [
         body('title').notEmpty().withMessage('Назва не може бути порожньою'),
@@ -18,16 +17,12 @@ router.post('/',
     reminderController.create
 );
 
-// Отримання всіх нагадувань (з фільтрацією за активністю)
 router.get('/', reminderController.getAll);
 
-// Отримання конкретного нагадування
 router.get('/:id', reminderController.getOne);
 
-// Отримання нагадувань на сьогодні
 router.get('/today/list', reminderController.getTodayReminders);
 
-// Оновлення нагадування
 router.put('/:id',
     [
         body('title').notEmpty().withMessage('Назва не може бути порожньою'),
@@ -39,10 +34,8 @@ router.put('/:id',
     reminderController.update
 );
 
-// Перемикання активності нагадування
 router.patch('/:id/toggle', reminderController.toggleActive);
 
-// Видалення нагадування
 router.delete('/:id', reminderController.delete);
 
 module.exports = router; 

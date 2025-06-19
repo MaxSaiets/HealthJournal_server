@@ -1,5 +1,4 @@
-//jsonwebtoken - для створення самого jwt токена
-//bcrypt - для хеширования паролів і тп. щоб не зберігати у відкритому доступі
+
 const ApiError = require('../error/ApiError')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
@@ -11,12 +10,11 @@ const generateJwt = (id, email, role) => {
     return jwt.sign(
         {id, email, role}, 
         process.env.SECRET_KEY,
-        { expiresIn: '24h', algorithm: 'HS256' } // опції, час життя
+        { expiresIn: '24h', algorithm: 'HS256' } 
     )
 }
 
 class UserController {
-    // Function to get or create a new user in the database
     async getOrsaveNewUserInDatabase(req, res, next) {
         const { email, token, userData } = req.body;
 
@@ -31,7 +29,6 @@ class UserController {
             let user = await User.findOne({ where: { uid } });
 
             if (!user) {
-                // user = await User.create({ email, role: "ADMIN", uid, name: userData.name, photoURL: userData.photoURL });
                 user = await User.create({ email, role: "ADMIN", uid });
             }
 
@@ -42,7 +39,6 @@ class UserController {
         }
     }
 
-   // Function to get a user from the database
     async getUserFromDatabase(req, res, next) {
         const bearerHeader = req.headers.authorization;
         if (!bearerHeader) {
@@ -69,7 +65,6 @@ class UserController {
         }
     }
 
-    // Отримання профілю користувача
     async getProfile(req, res) {
         try {
             const user = await User.findByPk(req.user.id, {
@@ -90,7 +85,6 @@ class UserController {
         }
     }
 
-    // Оновлення профілю користувача
     async updateProfile(req, res) {
         try {
             const errors = validationResult(req);
@@ -146,7 +140,6 @@ class UserController {
         }
     }
 
-    // Зміна паролю
     async changePassword(req, res) {
         try {
             const errors = validationResult(req);
@@ -161,13 +154,11 @@ class UserController {
                 return res.status(404).json({ message: 'Користувача не знайдено' });
             }
 
-            // Перевірка поточного паролю
             const isValidPassword = await user.validatePassword(currentPassword);
             if (!isValidPassword) {
                 return res.status(400).json({ message: 'Неправильний поточний пароль' });
             }
 
-            // Оновлення паролю
             user.password = newPassword;
             await user.save();
 
@@ -181,7 +172,6 @@ class UserController {
         }
     }
 
-    // Отримання статистики користувача
     async getUserStats(req, res) {
         try {
             const userId = req.user.id;
@@ -190,7 +180,6 @@ class UserController {
             const startDate = new Date();
             startDate.setDate(startDate.getDate() - parseInt(period));
 
-            // Отримання записів за період
             const entries = await HealthEntry.findAll({
                 where: {
                     userId,
@@ -201,7 +190,6 @@ class UserController {
                 order: [['date', 'ASC']]
             });
 
-            // Розрахунок статистики
             const stats = {
                 totalEntries: entries.length,
                 averageMood: 0,
@@ -227,7 +215,6 @@ class UserController {
                 stats.totalCalories = entries.reduce((sum, entry) => sum + (entry.caloriesBurned || 0), 0);
                 stats.averageSleep = entries.reduce((sum, entry) => sum + entry.sleepHours, 0) / entries.length;
 
-                // Розрахунок streak (днів поспіль)
                 const sortedEntries = entries.sort((a, b) => new Date(a.date) - new Date(b.date));
                 let currentStreak = 0;
                 let maxStreak = 0;
@@ -246,7 +233,6 @@ class UserController {
                 stats.streakDays = maxStreak;
             }
 
-            // Розрахунок досягнень
             if (stats.totalEntries >= 7) stats.achievements.push('Перший тиждень');
             if (stats.totalEntries >= 30) stats.achievements.push('Місяць ведення щоденника');
             if (stats.streakDays >= 7) stats.achievements.push('Тиждень поспіль');
@@ -263,7 +249,6 @@ class UserController {
         }
     }
 
-    // Видалення акаунту
     async deleteAccount(req, res) {
         try {
             const { password } = req.body;
@@ -273,16 +258,13 @@ class UserController {
                 return res.status(404).json({ message: 'Користувача не знайдено' });
             }
 
-            // Перевірка паролю
             const isValidPassword = await user.validatePassword(password);
             if (!isValidPassword) {
                 return res.status(400).json({ message: 'Неправильний пароль' });
             }
 
-            // Видалення всіх записів користувача
             await HealthEntry.destroy({ where: { userId: req.user.id } });
 
-            // Видалення користувача
             await user.destroy();
 
             return res.json({ message: 'Акаунт успішно видалено' });
@@ -295,12 +277,10 @@ class UserController {
         }
     }
 
-    // Перевірка авторизації
     async checkAuth(req, res) {
         try {
             const token = generateJwt(req.user.id, req.user.email, req.user.role);
             
-            // Оновлення часу останнього входу
             await User.update(
                 { lastLoginAt: new Date() },
                 { where: { id: req.user.id } }
@@ -316,7 +296,6 @@ class UserController {
         }
     }
 
-    // Отримання історії активності
     async getActivityHistory(req, res) {
         try {
             const { page = 1, limit = 10 } = req.query;
@@ -349,11 +328,3 @@ class UserController {
 }
 
 module.exports = new UserController()
-
-
-//const query = req.query
-/* const {id} = req.query //Деструктуризация(щоб витянути одразу id) можна також query.id
-if(!id){
-    return next(ApiError.badRequest('Не вказаний id'))
-}
-res.json (id) */

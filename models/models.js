@@ -2,7 +2,6 @@ const { DataTypes } = require('sequelize');
 const sequelize = require('../db');
 const bcrypt = require('bcrypt');
 
-// Модель користувача
 const User = sequelize.define('User', {
     id: {
         type: DataTypes.UUID,
@@ -25,7 +24,6 @@ const User = sequelize.define('User', {
         type: DataTypes.STRING,
         allowNull: false
     },
-    // Додаткові поля для профілю
     avatar: {
         type: DataTypes.STRING,
         allowNull: true
@@ -39,7 +37,7 @@ const User = sequelize.define('User', {
         allowNull: true
     },
     height: {
-        type: DataTypes.INTEGER, // в см
+        type: DataTypes.INTEGER, 
         allowNull: true,
         validate: {
             min: 100,
@@ -47,7 +45,7 @@ const User = sequelize.define('User', {
         }
     },
     weight: {
-        type: DataTypes.FLOAT, // в кг
+        type: DataTypes.FLOAT,
         allowNull: true,
         validate: {
             min: 30,
@@ -106,7 +104,6 @@ User.prototype.validatePassword = async function(password) {
     return await bcrypt.compare(password, this.password);
 };
 
-// Модель записів здоров'я
 const HealthEntry = sequelize.define('HealthEntry', {
     id: {
         type: DataTypes.UUID,
@@ -185,7 +182,6 @@ const HealthEntry = sequelize.define('HealthEntry', {
     }
 });
 
-// Модель нагадувань
 const Reminder = sequelize.define('Reminder', {
     id: {
         type: DataTypes.UUID,
@@ -230,7 +226,6 @@ const Reminder = sequelize.define('Reminder', {
     }
 });
 
-// Модель цитат
 const Quote = sequelize.define('Quote', {
     id: {
         type: DataTypes.UUID,
@@ -251,7 +246,6 @@ const Quote = sequelize.define('Quote', {
     }
 });
 
-// Модель refresh токенів
 const RefreshToken = sequelize.define('RefreshToken', {
     id: {
         type: DataTypes.UUID,
@@ -276,7 +270,6 @@ const RefreshToken = sequelize.define('RefreshToken', {
     }
 });
 
-// Встановлення зв'язків між моделями
 HealthEntry.belongsTo(User, { foreignKey: 'userId' });
 User.hasMany(HealthEntry, { foreignKey: 'userId' });
 

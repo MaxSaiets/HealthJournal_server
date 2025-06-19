@@ -5,7 +5,7 @@ const reminderRouter = require('./reminderRouter')
 const quoteRouter = require('./quoteRouter')
 const userRouter = require('./userRouter')
 
-const router = new Router() // головний роутер 
+const router = new Router()
 
 router.use('/auth', authRouter)
 router.use('/entries', healthEntryRouter)

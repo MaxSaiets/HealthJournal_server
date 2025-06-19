@@ -46,10 +46,8 @@ class AuthController {
                 }
             });
         } catch (error) {
-            // Log the error details
             console.error('Registration error:', error);
             
-            // Send more detailed error response
             return res.status(500).json({ 
                 message: 'Помилка сервера',
                 error: error.message,

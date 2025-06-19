@@ -1,5 +1,3 @@
-// Декодировка токена і перевірка на валідность, якщо токен не валідний то повертаєтсья
-// помилка про те що користувач не авторизований
 const jwt = require('jsonwebtoken')
 
 module.exports = function(req, res, next){
@@ -12,7 +10,7 @@ module.exports = function(req, res, next){
             return res.status(401).json({message: 'Не авторизований! Відсутній заголовок авторизації'})
         }
         
-        const token = authHeader.split(' ')[1] // Bearer token - тип токена потім сам токен (так пишуть) тобто треба розпилить і по 1 індексу отримати сам токен
+        const token = authHeader.split(' ')[1] 
         if(!token){
             return res.status(401).json({message: 'Не авторизований! Відсутній токен'})
         }

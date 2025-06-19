@@ -68,7 +68,6 @@ class QuoteController {
                 where.category = category;
             }
 
-            // Фільтрація за настроєм (якщо передано)
             if (mood) {
                 const moodCategories = {
                     1: ['motivation', 'inspiration', 'hope'],
@@ -86,7 +85,6 @@ class QuoteController {
             const count = await Quote.count({ where });
             
             if (count === 0) {
-                // Якщо немає цитат з фільтром, беремо будь-яку
                 const fallbackQuote = await Quote.findOne({
                     order: Sequelize.literal('RANDOM()')
                 });
@@ -119,7 +117,6 @@ class QuoteController {
             const today = new Date();
             const dayOfYear = Math.floor((today - new Date(today.getFullYear(), 0, 0)) / (1000 * 60 * 60 * 24));
             
-            // Використовуємо день року для визначення цитати дня
             const count = await Quote.count();
             const quoteIndex = dayOfYear % count;
             
