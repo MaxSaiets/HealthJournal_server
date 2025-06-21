@@ -14,7 +14,8 @@ class ReminderController {
                 description, 
                 time, 
                 repeatType = 'none',
-                daysOfWeek = []
+                daysOfWeek = [],
+                date // ДОДАНО
             } = req.body;
 
             const reminder = await Reminder.create({
@@ -23,7 +24,8 @@ class ReminderController {
                 description,
                 time,
                 repeatType,
-                daysOfWeek
+                daysOfWeek,
+                date // ДОДАНО
             });
 
             return res.status(201).json(reminder);
@@ -96,7 +98,8 @@ class ReminderController {
                 time, 
                 isActive,
                 repeatType,
-                daysOfWeek
+                daysOfWeek,
+                date // ДОДАНО
             } = req.body;
 
             const reminder = await Reminder.findOne({
@@ -116,7 +119,8 @@ class ReminderController {
                 time,
                 isActive,
                 repeatType,
-                daysOfWeek
+                daysOfWeek,
+                date // ДОДАНО
             });
 
             return res.json(reminder);
@@ -184,18 +188,36 @@ class ReminderController {
             const dayOfWeek = today.getDay();
             const todayStr = today.toISOString().slice(0, 10); // 'YYYY-MM-DD'
             const Op = require('sequelize').Op;
+            const where = {
+                userId: req.user.id,
+                isActive: true,
+                [Op.or]: [
+                    { repeatType: 'daily' },
+                    { repeatType: 'weekly', daysOfWeek: { [Op.contains]: [dayOfWeek] } },
+                    { repeatType: 'monthly', daysOfWeek: { [Op.contains]: [today.getDate()] } },
+                    { repeatType: 'none', date: todayStr }
+                ]
+            };
             const reminders = await Reminder.findAll({
-                where: {
-                    userId: req.user.id,
-                    isActive: true,
-                    [Op.or]: [
-                        { repeatType: 'daily' },
-                        { repeatType: 'weekly', daysOfWeek: { [Op.contains]: [dayOfWeek] } },
-                        { repeatType: 'monthly', daysOfWeek: { [Op.contains]: [today.getDate()] } },
-                        { repeatType: 'none', date: todayStr }
-                    ]
-                },
+                where,
                 order: [['time', 'ASC']]
+            });
+            // DEBUG LOG
+            console.log('getTodayReminders', {
+                userId: req.user.id,
+                todayStr,
+                dayOfWeek,
+                dayOfMonth: today.getDate(),
+                where,
+                found: reminders.map(r => ({
+                    id: r.id,
+                    title: r.title,
+                    repeatType: r.repeatType,
+                    daysOfWeek: r.daysOfWeek,
+                    date: r.date,
+                    isActive: r.isActive,
+                    time: r.time
+                }))
             });
             return res.json(reminders);
         } catch (error) {
